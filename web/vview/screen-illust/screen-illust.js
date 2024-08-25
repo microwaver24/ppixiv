@@ -612,21 +612,41 @@ export default class ScreenIllust extends Screen
         case "ArrowLeft":
         case "ArrowUp":
         case "PageUp":
-            e.preventDefault();
-            e.stopPropagation();
-
-            this.navigateToNext(false, { manga: e.shiftKey? "skip-to-first":"normal" });
+            this.goToPrev(e);
             break;
 
         case "ArrowRight":
         case "ArrowDown":
         case "PageDown":
-            e.preventDefault();
-            e.stopPropagation();
-
-            this.navigateToNext(true, { manga: e.shiftKey? "skip-to-first":"normal" });
+            this.goToNext(e);
             break;
         }
+
+        switch(e.code)
+        {
+        case "Numpad4":
+            this.goToPrev(e);
+            break;
+        case "Numpad6":
+            this.goToNext(e);
+            break;
+        }
+    }
+
+    goToPrev(e)
+    {
+        e.preventDefault();
+        e.stopPropagation();
+
+        this.navigateToNext(false, { manga: e.shiftKey? "skip-to-first":"normal" });
+    }
+
+    goToNext(e)
+    {
+        e.preventDefault();
+        e.stopPropagation();
+
+        this.navigateToNext(true, { manga: e.shiftKey? "skip-to-first":"normal" });
     }
 
     // Get the media ID and page navigating down (or up) will go to.

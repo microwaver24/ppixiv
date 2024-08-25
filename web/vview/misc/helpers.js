@@ -775,8 +775,8 @@ export class helpers
     // out, or null if it's not a zoom keypress.
     static isZoomHotkey(e)
     {
-        if(!e.ctrlKey)
-            return null;
+        // if(!e.ctrlKey)
+        //     return null;
         
         if(e.code == "NumpadAdd" || e.code == "Equal") /* = */
             return +1;

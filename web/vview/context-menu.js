@@ -148,6 +148,7 @@ export default class ContextMenu extends Widget
 
         // Use KeyListener to watch for ctrl being held.
         new KeyListener("Control", this._ctrlWasPressed);
+        new KeyListener("5", this._ctrlWasPressed); // Only actually care about numpad5, but this takes a key, not a code.
 
         // Work around glitchiness in Chrome's click behavior (if we're in Chrome).
         new FixChromeClicks(this.root);
@@ -918,6 +919,43 @@ export default class ContextMenu extends Widget
             }
         }
 
+        switch(e.code)
+        {
+        case "Numpad1":
+        {
+            // console.log(`_handleKeyEventForImage Numpad1: mediaId [${mediaId}]`);
+            let [illustId, illustPage] = helpers.mediaId.toIllustIdAndPage(mediaId);
+            let args = new helpers.args(`/bookmark_detail.php?illust_id=${illustId}#ppixiv?recommendations=1`);
+            helpers.navigate(args);
+            return true;
+        }
+        case "Numpad2":
+        {
+            // console.log(`_handleKeyEventForImage Numpad2: _effectiveUserId [${this._effectiveUserId}]`);
+            let argsArtists = new helpers.args(`/discovery/users#ppixiv?user_id=${this._effectiveUserId}`);
+            helpers.navigate(argsArtists);
+            return true;
+        }
+        case "Numpad3":
+        {
+            // console.log(`_handleKeyEventForImage Numpad3: mediaId [${mediaId}]`);
+            let [illustId, illustPage] = helpers.mediaId.toIllustIdAndPage(mediaId);
+            let args = new helpers.args(`/bookmark_detail.php?illust_id=${illustId}#ppixiv`);
+            helpers.navigate(args);
+            return true;
+        }
+        case "Numpad7":
+            // console.log("_handleKeyEventForImage Numpad7");
+            history.back();
+            return true;
+        case "Numpad8":
+            parent.location.reload();
+            return true;
+        case "Numpad9":
+            history.forward();
+            return true;
+        }
+
         // All of these hotkeys require Ctrl.
         if(!e.ctrlKey)
             return;
@@ -932,7 +970,7 @@ export default class ContextMenu extends Widget
             return true;
         }
 
-        if(e.key.toUpperCase() == "B")
+        if(e.key.toUpperCase() == "B" || e.code === "Numpad0")
         {
             (async() => {
                 if(mediaId == null)
@@ -977,6 +1015,27 @@ export default class ContextMenu extends Widget
                 });
             })();
             
+            return true;
+        }
+
+        // unbookmark
+        if(e.code === "NumpadDecimal")
+        {
+            (async() => {
+                if(mediaId == null)
+                    return;
+
+                let mediaInfo = await ppixiv.mediaCache.getMediaInfo(mediaId, { full: false });
+
+                if(mediaInfo.bookmarkData == null)
+                {
+                    ppixiv.message.show("Image isn't bookmarked");
+                    return;
+                }
+
+                Actions.bookmarkRemove(mediaId);
+            })();
+
             return true;
         }
 
